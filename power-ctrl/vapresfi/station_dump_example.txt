@@ -1,0 +1,34 @@
+Station b8:a3:86:96:96:8a (on wlan0)
+        inactive time:  15637 ms
+        rx bytes:       24
+        rx packets:     1
+        tx bytes:       3000230
+        tx packets:     0
+        tx retries:     0
+        tx failed:      0
+        signal:         -48 dBm
+        signal avg:     -48 dBm
+        tx bitrate:     6.0 MBit/s
+        authorized:     yes
+        authenticated:  yes
+        preamble:       long
+        WMM/WME:        no
+        MFP:            no
+        TDLS peer:              no
+Station aa:bb:86:96:96:cc (on wlan0)
+        inactive time:  15637 ms
+        rx bytes:       24
+        rx packets:     1
+        tx bytes:       1223436
+        tx packets:     0
+        tx retries:     0
+        tx failed:      0
+        signal:         -44 dBm
+        signal avg:     -44 dBm
+        tx bitrate:     12.0 MBit/s
+        authorized:     yes
+        authenticated:  yes
+        preamble:       long
+        WMM/WME:        no
+        MFP:            no
+        TDLS peer:              no

@@ -1,0 +1,29 @@
+Home AP
+
+
+2015  env GIT_SSL_NO_VERIFY=true git clone https://gitlab2.tkn.tu-berlin.de/pgawlowicz/cran.git
+ 2016  cd cran/
+ 2017  ls
+ 2018  ifconfig
+ 2019  ls
+ 2020  ./start_cran.sh 
+ 2021  ifconfig
+ 2022  ifconfig -a
+ 2023  vim start_cran.sh 
+ 2024  vim hostapd.conf 
+ 2025  ./start_cran.sh 
+ 2026  ls
+ 2027  cd p4/
+ 2028  ls
+ 2029  chmod +x env.sh 
+ 2030  vim env.sh 
+ 2031  pwd
+ 2032  vim env.sh 
+ 2033  ./env.sh 
+ 2034  . ./env.sh 
+ 2035  $CLI
+ 2036  cat ./env.sh 
+ 2037  ls
+ 2038  sudo ./run_switch_cran.sh 
+ 2039  history
+

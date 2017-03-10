@@ -1,0 +1,13 @@
+table_set_default table_switch_da _drop
+
+port_add mon0 0
+port_add l2tpeth0 1
+
+table_add table_modify_ethernet_header remove_eth_header 0 =>
+table_add table_modify_ethernet_header add_eth_header 1 =>
+
+table_add table_switch_da send_to_port 1 ff:ff:ff:ff:ff:ff => 0
+table_add table_switch_da send_to_port 0 ff:ff:ff:ff:ff:ff => 1
+
+table_add table_switch_da send_to_port 1 34:13:e8:24:77:be => 0
+table_add table_switch_da send_to_port 0 02:00:00:00:00:00 => 1

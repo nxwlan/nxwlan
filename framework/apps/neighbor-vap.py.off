@@ -1,0 +1,86 @@
+"""
+
+"""
+
+__author__ = 'zehl'
+
+import time
+from common.resfi_api import AbstractResFiApp
+import random
+
+
+class ResFiApp(AbstractResFiApp):
+
+    def __init__(self, log, agent):
+        AbstractResFiApp.__init__(self, log, 'de.berlin.tu.tkn.neigh-vap', agent)
+        self.vaps = {}
+        # channel change interval
+
+    def run(self):
+
+        self.log.info("%s: plugin::neighbor-vap started ... " % self.agent.getNodeID())
+
+        # wait to settle down
+        time.sleep(5)
+        # init phase
+
+        # wait random to make sure all nodes are not synchronized
+
+
+        while not self.isTerminated():
+
+            my_msg = {}
+            my_msg['payload'] = {'type' : 'vap_req' ,'ssid' : str(self.agent.getSSID()), 'ip' : str(self.getHostname())}
+            self.sendToNeighbors(my_msg, 1)
+
+
+            time.sleep(10)
+
+        self.log.debug("%s: plugin::neighbor-vap stopped ... " % self.agent.getNodeID())
+
+    """
+    receive callback function
+    """
+    def rx_cb(self, json_data):
+        self.log.info("%s :: recv() msg from %s at %d: %s" % (self.ns, json_data['originator'], json_data['tx_time_mus'], json_data))
+
+        message = json_data['payload']
+
+        timestampSent = json_data['tx_time_mus']
+        sender = json_data['originator']
+        payload = json_data['payload']
+        if 'type' in payload:
+            msgtype = payload['type']
+            if msgtype == "vap_req":
+                if 'ssid' in payload:
+                    neighbor_ssid = payload['ssid']
+                    self.log.info("%s :: recv() msg from %s at %d: VAP REQUEST for SSID: %s" % (self.ns, json_data['originator'], json_data['tx_time_mus'], str(neighbor_ssid)))
+                    if neighbor_ssid in self.vaps:
+                        self.log.debug("%s : Ignoring VAP request, VAP for SSID: %s already deployed" % (self.ns, neighbor_ssid))
+                        return
+                else:
+                    self.log.debug("%s :: recv() msg from %s at %d: VAP REQUEST!, ignoring: SSID missing." % (self.ns, json_data['originator'], json_data['tx_time_mus']))
+                    return
+                if 'ip' in payload:
+                    neighbor_ip = payload['ip']
+                    self.log.info("%s :: recv() msg from %s at %d: VAP REQUEST for IP: %s" % (self.ns, json_data['originator'], json_data['tx_time_mus'], str(neighbor_ip)))
+                else:
+                    self.log.debug("%s :: recv() msg from %s at %d: VAP REQUEST!, ignoring: IP missing." % (self.ns, json_data['originator'], json_data['tx_time_mus']))
+                    return
+                self.startVAP(neighbor_ssid, neighbor_ip)
+        #nb_channel = int(message['ch'])
+        #nb_load = float(message['load'])
+
+
+    """
+    new Link Notification Callback
+    """
+    def newLink_cb(self, nodeID):
+        self.log.info("%s ::newLink_cb() new AP neighbor detected notification (newLink: %s)" % (self.ns, nodeID))
+
+
+    """
+    Link Lost Notification Callback
+    """
+    def linkFailure_cb(self, nodeID):
+        self.log.info("%s :: linkFailure_cb() neighbor AP disconnected (lostLink: %s)" % (self.ns, nodeID))

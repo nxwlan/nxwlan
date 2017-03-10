@@ -1,0 +1,11 @@
+Neighbor AP    
+
+1  cd share/zehl/cran/
+    2  ls
+    3  ifconfig
+    4  ls
+    5  cd p4/
+    6  ls
+    7  . ./env.sh 
+    8  ./run_switch_rh.sh 
+

@@ -1,0 +1,10 @@
+table_set_default table_switch_da _drop
+
+port_add hwsim0 0
+port_add l2tpeth1 2
+
+table_add table_switch_da send_to_port 0 ff:ff:ff:ff:ff:ff => 2
+table_add table_switch_da send_to_port 2 ff:ff:ff:ff:ff:ff => 0
+
+table_add table_switch_da send_to_port 2 02:00:00:00:00:00 => 0
+table_add table_switch_da send_to_port 0 34:13:e8:24:77:be => 2

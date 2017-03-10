@@ -1,0 +1,70 @@
+#clean veth ifaces
+sudo ip link set dev veth0 down
+sudo ip link set dev veth1 down
+sudo ip link delete veth0 &> /dev/null;
+sleep 1
+
+#setup veth ifaces
+sudo ip link add name veth6 type veth peer name veth7
+sudo ip link set dev veth6 up
+sudo ip link set dev veth7 up
+sleep 1
+
+
+table_add table_process_frames send_frame 0
+table_add nat nat_miss_ext_to_int 1 1 1 0.0.0.0&&&0.0.0.0 0.0.0.0&&&0.0.0.0 0&&&0 0&&&0 => 99
+
+from scapy.all import *
+
+sniff(iface="veth1", prn=lambda x: hexdump(x))
+
+def rx_callback(pkt):
+     send(pkt, iface="mon0")
+
+sniff(iface="l2tpeth0", prn=rx_callback)
+
+TUNNELS:
+NUC2-CRAN# 
+sudo modprobe l2tp_eth
+sudo ip l2tp add tunnel tunnel_id 1000 peer_tunnel_id 1000 \
+          local 192.168.200.174 remote 192.168.200.32 \
+          encap udp udp_sport 5001 udp_dport 6001
+sudo ip l2tp add session tunnel_id 1000 session_id 1000 \
+          peer_session_id 1000
+sudo ip link set l2tpeth0 up
+sudo ip link set l2tpeth0 up mtu 1488
+
+sudo ip l2tp add tunnel tunnel_id 2000 peer_tunnel_id 1000 \
+          local 192.168.200.174 remote 192.168.200.25 \
+          encap udp udp_sport 5002 udp_dport 6002
+sudo ip l2tp add session tunnel_id 2000 session_id 1000 \
+          peer_session_id 1000
+sudo ip link set l2tpeth1 up
+sudo ip link set l2tpeth0 up mtu 1488
+
+
+NUC1-RH1# 
+sudo modprobe l2tp_eth
+sudo ip l2tp add tunnel tunnel_id 1000 peer_tunnel_id 1000 \
+          local 192.168.200.32 remote 192.168.200.174 \
+          encap udp udp_sport 6001 udp_dport 5001
+sudo ip l2tp add session tunnel_id 1000 session_id 1000 \
+          peer_session_id 1000
+sudo ip link set l2tpeth0 up
+sudo ip link set l2tpeth0 up mtu 1488
+
+
+NUC3-RH2# 
+sudo modprobe l2tp_eth
+sudo ip l2tp add tunnel tunnel_id 1000 peer_tunnel_id 2000 \
+          local 192.168.200.25 remote 192.168.200.174 \
+          encap udp udp_sport 6002 udp_dport 5002
+sudo ip l2tp add session tunnel_id 1000 session_id 1000 \
+          peer_session_id 1000
+sudo ip link set l2tpeth0 up
+sudo ip link set l2tpeth0 up mtu 1488
+
+
+
+sudo ip l2tp show tunnel
+sudo ip l2tp del tunnel tunnel_id 1000
